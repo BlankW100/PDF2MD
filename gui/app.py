@@ -221,15 +221,30 @@ class App:
 
                 pdf_tok = stats.get("pdf_tokens", 0)
                 md_tok = stats["tokens"]
-                pct = (1 - md_tok / pdf_tok) * 100 if pdf_tok else 0
                 size_kb = os.path.getsize(out) / 1024
+                is_scanned = stats.get("is_scanned", False)
 
                 self._write(f"✓ {os.path.basename(f)}  →  {os.path.basename(out)}")
-                self._write(
-                    f"  PDF raw: ~{pdf_tok:,} tokens  →  "
-                    f"MD: {md_tok:,} tokens  "
-                    f"({pct:.0f}% reduction | {size_kb:.1f} KB | {stats['elapsed']:.1f}s)"
-                )
+
+                if is_scanned:
+                    self._write(
+                        f"  ⚠ Scanned / image-only PDF (no text layer found)."
+                    )
+                    self._write(
+                        f"  Output: {md_tok:,} tokens | {size_kb:.1f} KB | {stats['elapsed']:.1f}s"
+                    )
+                    if opts.images == "extract":
+                        self._write(
+                            "  The content is inside the images — switch Images to  ocr  "
+                            "(offline) or  describe  (Claude AI) to actually read it."
+                        )
+                else:
+                    pct = (1 - md_tok / pdf_tok) * 100 if pdf_tok else 0
+                    self._write(
+                        f"  PDF raw: ~{pdf_tok:,} tokens  →  "
+                        f"MD: {md_tok:,} tokens  "
+                        f"({pct:.0f}% reduction | {size_kb:.1f} KB | {stats['elapsed']:.1f}s)"
+                    )
                 all_warnings += [f"{os.path.basename(f)} — {w}" for w in warns]
             except Exception as e:
                 self._write(f"✗ {os.path.basename(f)}  FAILED: {e}")

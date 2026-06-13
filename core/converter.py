@@ -66,6 +66,9 @@ def convert(path: str, opts) -> tuple[str, list[str], dict]:
     stats["chars"] = len(content)
     stats["lines"] = content.count("\n")
     stats["pdf_tokens"] = pdf_tokens
+    # A scanned/image PDF has almost no text layer; raw token count will be tiny.
+    # Threshold: fewer than 80 tokens for the whole document = effectively image-only.
+    stats["is_scanned"] = pdf_tokens < 80
     stats["elapsed"] = time.time() - start_time
 
     doc.close()

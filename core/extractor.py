@@ -120,8 +120,15 @@ def parse_page(page, body_size: float, running: set[str],
                      for b in blocks if b.get("type") == 0
                      for ln in b["lines"] for s in ln["spans"])
 
+    # On scanned pages the only "text" is often a scanner app watermark (e.g. CamScanner).
+    # If the entire page has very few text chars, treat it as image-only and skip text blocks.
+    page_is_image_only = text_chars < 20
+
     for block in blocks:
         if block.get("type") != 0:
+            continue
+        # Skip all text blocks on image-only pages — they are scanner watermarks, not content.
+        if page_is_image_only:
             continue
         bbox = block["bbox"]
         if any(rects_overlap(bbox, tb, tol=2) for tb in table_boxes):

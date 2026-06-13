@@ -59,12 +59,19 @@ def run_cli():
             out, warns, stats = convert(f, args)
             pdf_tok = stats.get("pdf_tokens", 0)
             md_tok = stats["tokens"]
-            pct = (1 - md_tok / pdf_tok) * 100 if pdf_tok else 0
             size_kb = os.path.getsize(out) / 1024
             print(f"{f} -> {out}")
-            print(f"  PDF raw: ~{pdf_tok:,} tokens  ->  "
-                  f"MD: {md_tok:,} tokens  "
-                  f"({pct:.0f}% reduction | {size_kb:.1f} KB | {stats['elapsed']:.1f}s)")
+            if stats.get("is_scanned"):
+                print(f"  WARNING: scanned/image-only PDF (no text layer).")
+                print(f"  Output: {md_tok:,} tokens | {size_kb:.1f} KB | {stats['elapsed']:.1f}s")
+                if args.images == "extract":
+                    print("  Re-run with --images ocr (offline) or --images describe (Claude AI)"
+                          " to read the content inside the images.")
+            else:
+                pct = (1 - md_tok / pdf_tok) * 100 if pdf_tok else 0
+                print(f"  PDF raw: ~{pdf_tok:,} tokens  ->  "
+                      f"MD: {md_tok:,} tokens  "
+                      f"({pct:.0f}% reduction | {size_kb:.1f} KB | {stats['elapsed']:.1f}s)")
             all_warnings += [f"{os.path.basename(f)} — {w}" for w in warns]
         except Exception as e:
             print(f"FAILED {f}: {e}", file=sys.stderr)
