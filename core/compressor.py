@@ -11,8 +11,10 @@ except ImportError:
 
 try:
     import tiktoken
+    # encoding_for_model downloads a cache file at first use;
+    # in a PyInstaller EXE that cache isn't bundled, so catch any failure.
     _TOKENIZER = tiktoken.encoding_for_model("gpt-4")
-except ImportError:
+except Exception:
     _TOKENIZER = None
 
 _WS = re.compile(r"[ \t ]+")

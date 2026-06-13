@@ -11,12 +11,13 @@ pip install pyinstaller --quiet
 
 echo.
 echo Building EXE...
+rem Note: tiktoken is NOT included — its encoding cache files cannot be bundled
+rem by PyInstaller. The app falls back to chars/4 token estimation automatically.
 pyinstaller ^
   --onefile ^
   --windowed ^
   --name "PDFtoMD" ^
   --collect-all fitz ^
-  --collect-data tiktoken ^
   --hidden-import anthropic ^
   --hidden-import rapidocr_onnxruntime ^
   --hidden-import pytesseract ^

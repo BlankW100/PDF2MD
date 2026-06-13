@@ -23,8 +23,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install PyMuPDF tiktoken pyinstaller
+          pip install PyMuPDF pyinstaller
           pip install anthropic --quiet
+          # tiktoken is intentionally NOT installed:
+          # its encoding data files are downloaded at runtime into a user cache folder
+          # that PyInstaller cannot bundle, causing "Unknown encoding cl100k_base".
+          # The app catches this and falls back to chars/4 estimation automatically.
 
       - name: Build EXE with PyInstaller
         run: |
@@ -33,8 +37,9 @@ jobs:
             --windowed `
             --name "PDFtoMD" `
             --collect-all fitz `
-            --collect-data tiktoken `
             --hidden-import anthropic `
+            --hidden-import rapidocr_onnxruntime `
+            --hidden-import pytesseract `
             main.py
 
       - name: Create GitHub Release and upload EXE
