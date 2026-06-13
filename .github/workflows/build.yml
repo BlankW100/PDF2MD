@@ -1,0 +1,61 @@
+name: Build Windows EXE
+
+on:
+  push:
+    tags:
+      - "v*"          # trigger on version tags: v1.0, v1.1, etc.
+
+permissions:
+  contents: write    # needed to create releases and upload assets
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install PyMuPDF tiktoken pyinstaller
+          pip install anthropic --quiet
+
+      - name: Build EXE with PyInstaller
+        run: |
+          pyinstaller `
+            --onefile `
+            --windowed `
+            --name "PDFtoMD" `
+            --collect-all fitz `
+            --collect-data tiktoken `
+            --hidden-import anthropic `
+            main.py
+
+      - name: Create GitHub Release and upload EXE
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "PDFtoMD ${{ github.ref_name }}"
+          body: |
+            ## Download
+
+            **[PDFtoMD.exe](https://github.com/${{ github.repository }}/releases/latest/download/PDFtoMD.exe)**
+            — Windows, no Python needed. Just download and run.
+
+            ### What's included
+            - Convert PDF → Markdown (text, tables, images)
+            - Token-efficient output for LLM use
+            - Algorithmic MD compressor (no API required)
+            - Optional Claude AI vision for images/scans
+
+            ### First-time setup
+            For `--images describe` (Claude vision), set your API key:
+            ```
+            set ANTHROPIC_API_KEY=sk-ant-...
+            ```
+          files: dist/PDFtoMD.exe
