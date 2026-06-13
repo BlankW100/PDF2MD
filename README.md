@@ -5,15 +5,16 @@ Pulls **text, headings, tables, and images** out of any PDF and writes clean,
 compressed Markdown — plus an algorithmic compressor that shrinks existing `.md` files
 without any AI or API.
 
----
+## Quick Start
 
-## Download (no Python needed)
+```powershell
+git clone https://github.com/BlankW100/PDF2MD.git
+cd PDF2MD
+pip install PyMuPDF
+python main.py
+```
 
-**[⬇ Download PDFtoMD.exe](https://github.com/BlankW100/PDF2MD/releases/latest/download/PDFtoMD.exe)**
-
-Windows only · single file · just download and double-click.
-
-Or see all releases: [github.com/BlankW100/PDF2MD/releases](https://github.com/BlankW100/PDF2MD/releases)
+That's it. Double-click the GUI window or use the command line.
 
 ---
 
@@ -68,15 +69,17 @@ Headings, tables, and code blocks are never modified.
 
 ---
 
-## Install from source (Python 3.9+)
+## Full installation guide (Python 3.9+)
 
-### Step 1 — Required
+### Step 1 — Clone the repo and install core package
 
 ```powershell
+git clone https://github.com/BlankW100/PDF2MD.git
+cd PDF2MD
 pip install PyMuPDF
 ```
 
-Gives you: PDF text + table + image extraction. That's all you need for the default `extract` mode.
+Gives you: PDF text + table + image extraction. That's the minimum — you can run now.
 
 ### Step 2 — Recommended
 
@@ -123,13 +126,18 @@ python main.py *.pdf --compress aggressive # batch + aggressive compression
 
 ---
 
-## Build EXE yourself
+## Build standalone EXE (Windows only)
+
+If you want a single `.exe` file with no Python required:
 
 ```powershell
 pip install pyinstaller
 build.bat
 # → dist\PDFtoMD.exe
 ```
+
+> **Note:** Pre-built EXEs are not yet available for download. They're being tested.
+> For now, use the Python source install above — it's just one `git clone` and `pip install`.
 
 ---
 
