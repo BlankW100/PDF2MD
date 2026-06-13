@@ -68,26 +68,57 @@ Headings, tables, and code blocks are never modified.
 
 ---
 
-## Install from source (Python)
+## Install from source (Python 3.9+)
+
+### Step 1 — Required
 
 ```powershell
-pip install -r requirements.txt
-python main.py          # opens GUI
-python main.py report.pdf               # CLI: convert one file
-python main.py *.pdf --compress aggressive   # batch with aggressive compression
+pip install PyMuPDF
 ```
 
-### OCR engines for `--images ocr` (offline, no API)
+Gives you: PDF text + table + image extraction. That's all you need for the default `extract` mode.
 
-- **RapidOCR** — `pip install rapidocr-onnxruntime` — pip-only, easiest.
-- **Tesseract** — `pip install pytesseract pillow` + install the Tesseract binary.
+### Step 2 — Recommended
 
-### Claude vision for `--images describe`
+```powershell
+pip install tiktoken
+```
+
+Gives you: accurate token counts. Without it, the program estimates tokens at `chars ÷ 4`.
+
+### Step 3 — Optional: OCR for scanned PDFs (`--images ocr`)
+
+Pick **one** engine (no API key or internet needed):
+
+```powershell
+pip install rapidocr-onnxruntime   # easiest — pip only, no extra program
+```
+
+or
+
+```powershell
+pip install pytesseract pillow
+# also install the Tesseract binary from https://github.com/UB-Mannheim/tesseract/wiki
+```
+
+> **When do you need this?** If your PDF is a scan or a photo (e.g. from CamScanner), all content is stored as an image — there is no text layer. OCR reads the pixels and converts them back to text.
+
+### Step 4 — Optional: Claude AI vision for images/scans (`--images describe`)
 
 ```powershell
 pip install anthropic
-set ANTHROPIC_API_KEY=sk-ant-...
-python main.py scan.pdf --images describe
+set ANTHROPIC_API_KEY=sk-ant-...   # get one at console.anthropic.com
+```
+
+Best results for complex layouts (tables, mixed fonts, diagrams).
+
+### Run
+
+```powershell
+python main.py                              # open GUI
+python main.py report.pdf                  # CLI: convert one file
+python main.py scan.pdf --images ocr       # scanned PDF with offline OCR
+python main.py *.pdf --compress aggressive # batch + aggressive compression
 ```
 
 ---
